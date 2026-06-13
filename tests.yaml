@@ -1,0 +1,19 @@
+sample:
+  description: Zephyr Audio Analyzer application scaffold
+  name: zephyr audio analyzer
+common:
+  min_ram: 2
+  min_flash: 16
+  tags: adc sensor
+  integration_platforms:
+    - lp_mspm0g3507
+  harness: console
+  harness_config:
+    type: one_line
+    regex:
+      - "Zephyr Audio Analyzer on (.*)"
+tests:
+  app.default:
+    tags: adc sensor
+    platform_allow:
+      - lp_mspm0g3507
