@@ -6,10 +6,8 @@ manifest:
   projects:
     - name: zephyr
       remote: zephyrproject-rtos
-      # Change this revision to the exact release version you want to use.
-      revision: v4.4.1
+      revision: main
       import: true
 
   self:
-    # This tells west that your repository is the main application
     path: app
