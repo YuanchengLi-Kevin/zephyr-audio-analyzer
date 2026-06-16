@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 Yuancheng Li
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <zephyr/dt-bindings/adc/adc.h>
 #include <zephyr/dt-bindings/clock/mspm0_clock.h>
 #include <zephyr/dt-bindings/display/panel.h>
