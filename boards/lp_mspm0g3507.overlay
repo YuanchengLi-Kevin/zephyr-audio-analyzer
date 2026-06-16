@@ -6,6 +6,20 @@
 / {
 	chosen {
 		zephyr,display = &ili9341;
+		zephyr,audio-uart = &uart1;
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+
+		audio_input_toggle_button: audio_input_toggle_button {
+			gpios = <&gpiob 21 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+			label = "Audio input toggle";
+		};
+	};
+
+	aliases {
+		audio-input-toggle-button = &audio_input_toggle_button;
 	};
 
 	zephyr,user {
@@ -66,4 +80,11 @@
 	ti,clk-range = <6>;
 	ti,clk-divider = <2>;
 	max-result-reg = <4>;
+};
+
+&uart1 {
+	status = "okay";
+	current-speed = <2000000>;
+	pinctrl-0 = <&uart1_tx_pa17 &uart1_rx_pa18>;
+	pinctrl-names = "default";
 };

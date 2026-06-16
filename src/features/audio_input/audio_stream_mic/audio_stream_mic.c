@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "features/audio_capture/audio_capture.h"
+#include "features/audio_input/audio_stream_mic/audio_stream_mic.h"
 
 #include <errno.h>
 
@@ -27,7 +27,7 @@ static const struct adc_channel_cfg adc_channel_cfg = {
 	.channel_id = AUDIO_ADC_CHANNEL_ID,
 };
 
-int audio_capture_init(void)
+int audio_stream_mic_init(void)
 {
 	int ret;
 
@@ -47,7 +47,7 @@ int audio_capture_init(void)
 	return adc_channel_setup(adc_dev, &adc_channel_cfg);
 }
 
-int audio_capture_read(uint16_t *sample)
+int audio_stream_mic_read(uint16_t *sample)
 {
 	struct adc_sequence sequence = {
 		.channels = BIT(AUDIO_ADC_CHANNEL_ID),

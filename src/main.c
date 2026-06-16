@@ -6,9 +6,11 @@
 #include <zephyr/sys/printk.h>
 
 #include "features/audio_analysis/audio_analysis.h"
-#include "features/audio_capture/audio_capture.h"
+#include "features/audio_input/audio_input.h"
+#include "features/audio_input_control/audio_input_control.h"
 #include "features/audio_passthrough/audio_passthrough.h"
 #include "features/audio_playback/audio_playback.h"
+#include "features/display_msg/display_msg.h"
 #include "features/display_spectrum/display_spectrum.h"
 #include "features/display_startup/display_startup.h"
 
@@ -23,10 +25,17 @@ int main(void)
 		return 0;
 	}
 
-	ret = audio_capture_init();
+	ret = audio_input_init();
 	if (ret != 0)
 	{
-		printk("Audio capture init failed: %d\n", ret);
+		printk("Audio input init failed: %d\n", ret);
+		return 0;
+	}
+
+	ret = audio_input_control_init();
+	if (ret != 0)
+	{
+		printk("Audio input control init failed: %d\n", ret);
 		return 0;
 	}
 
@@ -47,6 +56,15 @@ int main(void)
 		printk("Display spectrum start failed: %d\n", ret);
 		return 0;
 	}
+
+	ret = display_msg_init();
+	if (ret != 0)
+	{
+		printk("Display message init failed: %d\n", ret);
+		return 0;
+	}
+
+	display_msg_show_input_mode(audio_input_get_mode());
 
 	audio_analysis_start();
 	audio_passthrough_start();
