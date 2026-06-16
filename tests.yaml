@@ -11,7 +11,7 @@ common:
   harness_config:
     type: one_line
     regex:
-      - "Zephyr Audio Analyzer on (.*)"
+      - "Zephyr Audio Analyzer ADC->DAC passthrough with FFT on (.*)"
 tests:
   app.default:
     tags: adc sensor

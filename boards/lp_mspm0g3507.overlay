@@ -1,23 +1,20 @@
 #include <zephyr/dt-bindings/adc/adc.h>
 #include <zephyr/dt-bindings/clock/mspm0_clock.h>
+#include <zephyr/dt-bindings/gpio/gpio.h>
 
 / {
-	aliases {
-		light-sensor = &grove_light;
-	};
-
-	grove_light: grove-light {
-		compatible = "seeed,grove-light";
-		io-channels = <&adc0 7>;
+	zephyr,user {
+		amp-control-gpios = <&gpiob 6 GPIO_ACTIVE_HIGH>;
+		mic-power-gpios = <&gpioa 26 GPIO_ACTIVE_HIGH>;
 	};
 };
 
 &adc0 {
 	status = "okay";
-	pinctrl-0 = <&analog_pa22 &analog_pa26 &analog_pa27>;
+	pinctrl-0 = <&analog_pb24>;
 	pinctrl-names = "default";
 	clocks = <&ckm MSPM0_CLOCK_MCLK>;
-	ti,clk-range = <7>;
+	ti,clk-range = <6>;
 	ti,clk-divider = <2>;
-	max-result-reg = <12>;
+	max-result-reg = <4>;
 };
