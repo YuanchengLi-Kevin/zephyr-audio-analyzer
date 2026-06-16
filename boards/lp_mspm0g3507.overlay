@@ -1,12 +1,61 @@
 #include <zephyr/dt-bindings/adc/adc.h>
 #include <zephyr/dt-bindings/clock/mspm0_clock.h>
+#include <zephyr/dt-bindings/display/panel.h>
 #include <zephyr/dt-bindings/gpio/gpio.h>
 
 / {
+	chosen {
+		zephyr,display = &ili9341;
+	};
+
 	zephyr,user {
 		amp-control-gpios = <&gpiob 6 GPIO_ACTIVE_HIGH>;
 		mic-power-gpios = <&gpioa 26 GPIO_ACTIVE_HIGH>;
 	};
+
+	/*
+	 * ILI9341 SPI LCD on SPI0:
+	 * SCK=PA12, MOSI/PICO=PB17, CS=PA8.
+	 * Control pins: D/C=PB19, RESET=PB16. BACKLIGHT is tied to 3.3V.
+	 */
+	mipi_dbi {
+		compatible = "zephyr,mipi-dbi-spi";
+		dc-gpios = <&gpiob 19 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpiob 16 GPIO_ACTIVE_LOW>;
+		spi-dev = <&spi0>;
+		write-only;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		ili9341: ili9341@0 {
+			compatible = "ilitek,ili9341";
+			reg = <0>;
+			mipi-max-frequency = <16000000>;
+			mipi-cpol;
+			mipi-cpha;
+			pixel-format = <PANEL_PIXEL_FORMAT_RGB_565>;
+			rotation = <90>;
+			h-mirror;
+			width = <320>;
+			height = <240>;
+		};
+	};
+};
+
+/* PA12 is reassigned from CAN TX to SPI0 SCK for the LCD. */
+&canfd0 {
+	status = "disabled";
+};
+
+/* Board DTS maps SPI1 CS to PB6, which this app uses for amp control. */
+&spi1 {
+	status = "disabled";
+};
+
+&spi0 {
+	pinctrl-0 = <&spi0_sclk_pa12 &spi0_pico_pb17>;
+	pinctrl-names = "default";
+	cs-gpios = <&gpioa 8 GPIO_ACTIVE_LOW>;
 };
 
 &adc0 {

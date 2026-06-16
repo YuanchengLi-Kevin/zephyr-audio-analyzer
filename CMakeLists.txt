@@ -13,4 +13,5 @@ target_sources(app PRIVATE
   src/features/audio_capture/audio_capture.c
   src/features/audio_passthrough/audio_passthrough.c
   src/features/audio_playback/audio_playback.c
+  src/features/display_startup/display_startup.c
 )

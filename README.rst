@@ -9,10 +9,6 @@ Building
 
 Build for the MSPM0G3507 LaunchPad:
 
-.. code-block:: console
-
-   west build -b lp_mspm0g3507 .
-
 To force a clean configure:
 
 .. code-block:: console
@@ -31,8 +27,8 @@ After a successful build, flash the board with:
 Runtime Behavior
 ****************
 
-The firmware starts an ADC-to-DAC passthrough thread and a lower-priority FFT
-thread:
+The firmware initializes an ILI9341 SPI LCD, then starts an ADC-to-DAC
+passthrough thread and a lower-priority FFT thread:
 
 * The passthrough thread samples ``adc0`` channel 5 and immediately writes the
   12-bit value to ``dac0`` channel 0.
@@ -43,7 +39,27 @@ On startup, the console prints:
 
 .. code-block:: console
 
-   Zephyr Audio Analyzer ADC->DAC passthrough with FFT on <board-target>
+   Zephyr Audio Analyzer ADC->DAC passthrough with FFT and LCD on <board-target>
+
+ILI9341 LCD Wiring
+******************
+
+The LP-MSPM0G3507 overlay uses Zephyr's native ``ilitek,ili9341`` display
+driver through the ``zephyr,mipi-dbi-spi`` bridge on ``spi0``.
+
+Default display wiring:
+
+* ``SCK``: ``PB18``
+* ``MOSI`` / ``PICO``: ``PB17``
+* ``MISO`` / ``POCI``: ``PB19``; optional because the display is configured
+  ``write-only``
+* ``CS``: ``PA8``
+* ``D/C``: ``PB20``
+* ``RESET``: ``PB21``, active low
+* ``BACKLIGHT``: ``PB27``, active high
+
+Adjust ``boards/lp_mspm0g3507.overlay`` if your LCD module is wired
+differently.
 
 Development Notes
 *****************
