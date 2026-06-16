@@ -16,6 +16,7 @@
 #include <zephyr/sys/util.h>
 
 #include "features/display_startup/display_startup.h"
+#include "features/display_spectrum/spectrum_scaling/spectrum_scaling.h"
 
 #define SPECTRUM_STACK_SIZE 2048
 #define SPECTRUM_PRIORITY 7
@@ -50,11 +51,6 @@ static uint16_t rect_buffer[SPECTRUM_MAX_BAR_WIDTH * SPECTRUM_MAX_HEIGHT];
 static uint16_t previous_heights[DISPLAY_SPECTRUM_BARS];
 static uint32_t last_frame_ms;
 static bool spectrum_started;
-
-static uint32_t abs32(int32_t value)
-{
-	return value < 0 ? (uint32_t)-value : (uint32_t)value;
-}
 
 static uint16_t graph_width(void)
 {
@@ -245,10 +241,7 @@ void display_spectrum_submit_fft(const int32_t real[AUDIO_FFT_SIZE],
 				 const int32_t imag[AUDIO_FFT_SIZE])
 {
 	struct spectrum_frame frame = { 0 };
-	uint32_t magnitudes[DISPLAY_SPECTRUM_BARS] = { 0 };
-	uint32_t peak = 1U;
 	uint32_t now_ms;
-	uint16_t max_height;
 
 	if (!spectrum_started) {
 		return;
@@ -260,27 +253,7 @@ void display_spectrum_submit_fft(const int32_t real[AUDIO_FFT_SIZE],
 	}
 	last_frame_ms = now_ms;
 
-	for (uint16_t bar = 0; bar < DISPLAY_SPECTRUM_BARS; bar++) {
-		uint16_t start_bin = 1U + (bar * ((AUDIO_FFT_SIZE / 2U) - 1U)) /
-						   DISPLAY_SPECTRUM_BARS;
-		uint16_t end_bin = 1U + ((bar + 1U) * ((AUDIO_FFT_SIZE / 2U) - 1U)) /
-						 DISPLAY_SPECTRUM_BARS;
-		uint32_t sum = 0U;
-		uint16_t count = 0U;
-
-		for (uint16_t bin = start_bin; bin < end_bin; bin++) {
-			sum += abs32(real[bin]) + abs32(imag[bin]);
-			count++;
-		}
-
-		magnitudes[bar] = count > 0U ? sum / count : 0U;
-		peak = MAX(peak, magnitudes[bar]);
-	}
-
-	max_height = graph_height();
-	for (uint16_t bar = 0; bar < DISPLAY_SPECTRUM_BARS; bar++) {
-		frame.bars[bar] = (uint16_t)((magnitudes[bar] * max_height) / peak);
-	}
+	spectrum_scaling_fft_to_bars(real, imag, frame.bars, graph_height());
 
 	if (k_msgq_put(&spectrum_msgq, &frame, K_NO_WAIT) != 0) {
 		k_msgq_purge(&spectrum_msgq);

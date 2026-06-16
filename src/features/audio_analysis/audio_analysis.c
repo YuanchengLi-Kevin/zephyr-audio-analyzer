@@ -50,6 +50,7 @@ static const struct q15_twiddle twiddle_steps[AUDIO_FFT_BITS] = {
 	{32610, -3212},
 	{32729, -1608},
 	{32757, -804},
+	{32766, -402},
 };
 
 static uint16_t reverse_bits(uint16_t value)
@@ -91,10 +92,19 @@ void audio_analysis_submit_sample(uint16_t sample)
 
 static void fft_prepare_input(const struct sample_block *block)
 {
+	uint32_t sum = 0;
+
+	for (uint16_t i = 0; i < AUDIO_FFT_SIZE; i++)
+	{
+		sum += block->samples[i];
+	}
+
+	int32_t average = (int32_t)(sum / AUDIO_FFT_SIZE);
+
 	for (uint16_t i = 0; i < AUDIO_FFT_SIZE; i++)
 	{
 		uint16_t reversed = reverse_bits(i);
-		int32_t centered = (int32_t)block->samples[i] - AUDIO_ADC_MIDPOINT;
+		int32_t centered = (int32_t)block->samples[i] - average;
 
 		fft_real[reversed] = centered << 4;
 		fft_imag[reversed] = 0;

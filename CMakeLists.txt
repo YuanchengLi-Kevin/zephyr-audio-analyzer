@@ -15,4 +15,5 @@ target_sources(app PRIVATE
   src/features/audio_playback/audio_playback.c
   src/features/display_startup/display_startup.c
   src/features/display_spectrum/display_spectrum.c
+  src/features/display_spectrum/spectrum_scaling/spectrum_scaling.c
 )
