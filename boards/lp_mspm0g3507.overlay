@@ -89,7 +89,7 @@
 
 &uart1 {
 	status = "okay";
-	current-speed = <2000000>;
-	pinctrl-0 = <&uart1_tx_pa17 &uart1_rx_pa18>;
+	current-speed = <1000000>;
+	pinctrl-0 = <&uart1_rx_pa9>;
 	pinctrl-names = "default";
 };
